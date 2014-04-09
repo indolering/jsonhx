@@ -1,0 +1,12 @@
+{
+  "name": "jsonhx",
+  "url": "https://github.com/druppy/jsonhx",
+  "license": "MIT",
+  "tags": ["asynchronous", "async", "jsonrpc"],
+  "description": "Jsonhx is a JsonPRC library for Haxe",
+  "releasenote": "First attempt to make public",
+  "version": "0.1.0",
+  "contributors": ["bl"],
+  "dependencies": {"promhx":""}
+}
+
