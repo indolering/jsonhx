@@ -9,7 +9,10 @@ Example
 =======
 
 The simple example is like this :
+    import jsonhx.*;
 
+    ...
+    
     var rpc = new JsonRpc( "http://a_host/my_test_service.smd" );
 
     rpc.status([]).then( funtion( res ) {
