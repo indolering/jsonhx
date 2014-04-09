@@ -6,7 +6,7 @@ Haxe lib to handle JsonRPC, and handling calles async using promhx.
 I try to use [this](http://tools.ietf.org/html/draft-zyp-json-schema-04) for the structure of the SMD file.
 
 Example
-=======
+-------
 
 The simple example is like this :
     import jsonhx.*;
@@ -25,3 +25,8 @@ given arguements, are given runtime.
 
 Also note that arguments are given in an array, as we cant create a function and
 arguments for this dynamically either.
+
+install
+-------
+
+    haxelib git jsonhx https://github.com/druppy/jsonhx.git
