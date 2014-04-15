@@ -14,10 +14,10 @@ class JsonRpc implements Dynamic {
     var _seq_id: Int = 0;
 
     private function normalize_name( method_name : String ) : String {
-        var new_name: String = "";
+        var new_name = new StringBuf();
 
-        function issymbol( c: Null<Int> ) : Boolean {
-            if( ('a'.charCodeAt( 0 ) <= c && 'z'.charCodeAt( 0 ) >= c) || c == '_' )
+        function issymbol( c: Int ) : Bool {
+            if( ('a'.charCodeAt( 0 ) <= c && 'z'.charCodeAt( 0 ) >= c) || c == '_'.charCodeAt( 0 ) )
                 return true;
 
             if( ('A'.charCodeAt( 0 ) <= c && 'Z'.charCodeAt( 0 ) >= c))
@@ -29,14 +29,14 @@ class JsonRpc implements Dynamic {
             return false;
         }
 
-        for( var i in 0 .. method_name.length ) {
+        for( i in 0...method_name.length ) {
             if( issymbol( method_name.charCodeAt( i )))
-                new_name += method_name.charAt( i );
+                new_name.add( method_name.charAt( i ));
             else
-                new_name += '_';
+                new_name.add( '_' );
         }
 
-        return new_name;
+        return new_name.toString();
     }
 
     private function method_make( target_url: String, services : Dynamic ) : Void {
@@ -67,9 +67,10 @@ class JsonRpc implements Dynamic {
             var pmax = param_defs.length;
             var pmin = pmax - optional_cnt;
 
-            trace( 'RPC method "$name"' );
+            var nname = normalize_name( name );
+            trace( 'RPC method "$name" ($nname)' );
 
-            Reflect.setField( this, name, function( params: Array<Dynamic> = [] ) : Promise<Dynamic> {
+            Reflect.setField( this, nname, function( params: Array<Dynamic> ) : Promise<Dynamic> {
                 if( params == null )
                     params = [];
 
@@ -117,10 +118,10 @@ class JsonRpc implements Dynamic {
     public function new( smd: String ) {
         var d: String;
 
-        if( smd[ 0 ] == '{' )
+        if( smd.charAt( 0 ) == '{' )
             d = smd;
         else
-            d = Http.requestUrl( smb );
+            d = Http.requestUrl( smd );
 
         var j = haxe.Json.parse( d );
 
