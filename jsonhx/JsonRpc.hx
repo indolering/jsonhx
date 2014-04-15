@@ -1,7 +1,7 @@
 /*
     haxe JsonRPC
 */
-package jsonprc;
+package jsonhx;
 
 import haxe.*;
 import haxe.remoting.*;
