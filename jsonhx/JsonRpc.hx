@@ -13,8 +13,34 @@ class JsonRpc implements Dynamic {
 
     var _seq_id: Int = 0;
 
+    private function normalize_name( method_name : String ) : String {
+        var new_name: String = "";
+
+        function issymbol( c: Null<Int> ) : Boolean {
+            if( ('a'.charCodeAt( 0 ) <= c && 'z'.charCodeAt( 0 ) >= c) || c == '_' )
+                return true;
+
+            if( ('A'.charCodeAt( 0 ) <= c && 'Z'.charCodeAt( 0 ) >= c))
+                return true;
+
+            if( ('0'.charCodeAt( 0 ) <= c && '9'.charCodeAt( 0 ) >= c))
+                return true;
+
+            return false;
+        }
+
+        for( var i in 0 .. method_name.length ) {
+            if( issymbol( method_name.charCodeAt( i )))
+                new_name += method_name.charAt( i );
+            else
+                new_name += '_';
+        }
+
+        return new_name;
+    }
+
     private function method_make( target_url: String, services : Dynamic ) : Void {
-        for( name in Reflect.fields( services    )) {
+        for( name in Reflect.fields( services )) {
             var def = Reflect.field( services, name );
 
             // Read and convert to haxe types
@@ -38,13 +64,16 @@ class JsonRpc implements Dynamic {
                 }
             }
 
+            var pmax = param_defs.length;
+            var pmin = pmax - optional_cnt;
+
             trace( 'RPC method "$name"' );
 
-            Reflect.setField( this, name, function( params: Array<Dynamic> ) : Promise<Dynamic> {
+            Reflect.setField( this, name, function( params: Array<Dynamic> = [] ) : Promise<Dynamic> {
                 if( params == null )
                     params = [];
 
-                if( params.length == param_defs.length ) {
+                if( params.length <= pmax || params.length >= pmin) {
                     var r = new Promise<Dynamic>();
 
                     var h = new Http( target_url );
@@ -82,8 +111,16 @@ class JsonRpc implements Dynamic {
         }
     }
 
-    public function new( smb_url: String ) {
-        var d = Http.requestUrl( smb_url );
+    /**
+        This either loads a SMD file from an URL, or gets it from a given json string.
+    */
+    public function new( smd: String ) {
+        var d: String;
+
+        if( smd[ 0 ] == '{' )
+            d = smd;
+        else
+            d = Http.requestUrl( smb );
 
         var j = haxe.Json.parse( d );
 
