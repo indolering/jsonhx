@@ -116,6 +116,8 @@ class JsonRpc implements Dynamic {
         This either loads a SMD file from an URL, or gets it from a given json string.
     */
     public function new( smd: String ) {
+        smd = StringTools.trim(smd);
+        
         var d: String;
 
         if( smd.charAt( 0 ) == '{' )
