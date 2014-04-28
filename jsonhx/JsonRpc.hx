@@ -117,14 +117,7 @@ class JsonRpc implements Dynamic {
     */
     public function new( smd: String ) {
         smd = StringTools.trim(smd);
-        
-        var d: String;
-
-        if( smd.charAt( 0 ) == '{' )
-            d = smd;
-        else
-            d = Http.requestUrl( smd );
-
+        var d = ( smd.charAt( 0 ) == '{' ) ? smd : Http.requestUrl( smd );
         var j = haxe.Json.parse( d );
 
         method_make( j.target, j.services );
