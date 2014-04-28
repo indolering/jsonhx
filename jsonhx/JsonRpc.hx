@@ -39,9 +39,11 @@ class JsonRpc implements Dynamic {
         return new_name.toString();
     }
 
-    private function method_make( target_url: String, services : Dynamic ) : Void {
-        for( name in Reflect.fields( services )) {
-            var def = Reflect.field( services, name );
+    private function method_make( smd:Dynamic ) : Void {
+
+        smd = haxe.Json.parse( smd );
+        var target_url : String = smd.target;
+        var services : Dynamic = smd.services;
 
             // Read and convert to haxe types
             var optional_cnt = 0;
@@ -115,11 +117,16 @@ class JsonRpc implements Dynamic {
     /**
         This either loads a SMD file from an URL, or gets it from a given json string.
     */
-    public function new( smd: String ) {
+    public function new( smd: String, callback : Dynamic ) {
         smd = StringTools.trim(smd);
-        var d = ( smd.charAt( 0 ) == '{' ) ? smd : Http.requestUrl( smd );
-        var j = haxe.Json.parse( d );
 
-        method_make( j.target, j.services );
+        if ( smd.charAt( 0 ) == '{' ) { //if JSON String
+            method_make( smd );
+        } else {
+            var h = new haxe.Http(smd);
+            h.onData = function(data) {  method_make(data);  }
+            h.onError = function(msg) { throw "Error on fetching SMD from $smd: $msg"; }
+        }
+
     }
 }
